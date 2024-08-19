@@ -1,18 +1,20 @@
-on: push
-# Пример для проекта на Node.js
-jobs:
-  build: # имя взято для примера
-    runs-on: ubuntu-latest
-    steps:
-      # Клонируем репозиторий
-      - uses: actions/checkout@v3
-      # Устанавливаем Node.js
-      - uses: actions/setup-node@v3
-      # Ставим зависимости
-      - run: make setup
-      # Запускаем линтер
-      - run: make test 
-      - run: make lint
-      - uses: snyk/actions/node@master
+on:
+  push:
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@master
+        - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
         env:
-          SNYK_TOKEN: ${{ secrets. SNYK_TOKEN }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+            - uses: actions/setup-node@v3
+        with: 
+              node-version: '16.x'
+              cache: 'npm'
+        - run: make setup
+        - run: make lint
+        - run: make test
